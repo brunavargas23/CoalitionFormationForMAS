@@ -1,0 +1,54 @@
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+    mavenCentral()
+    
+    maven {
+        url "http://jacamo.sourceforge.net/maven2"
+    }
+    
+    flatDir {
+       dirs 'lib'
+       dirs "$rootProject.projectDir/lib"
+   }
+}
+
+dependencies {    
+  	compile group: 'com.google.guava', name: 'guava', version: '22.0'
+  
+    compile fileTree(dir: 'lib', include: '*.jar')    
+      
+   	compile project(path: ":CoalitionAlgorithms", configuration: 'testArtifacts')
+   	compile project(path: ":MassimServer", configuration: 'serverArtifact')
+
+	compile files("src")
+
+    //testImplementation 'junit:junit:4.+'
+    testCompile 'junit:junit:[4,)'
+}
+
+task execJunit(type: JavaExec) {	
+  	classpath = sourceSets.main.runtimeClasspath
+	main = 'org.junit.runner.JUnitCore' 
+
+	if (project.hasProperty('experimentConf')){
+		systemProperty 'confName', project.getProperty('experimentConf')
+	}	
+	if (project.hasProperty('junitFile')){
+		args project.getProperty('junitFile');
+	}
+	
+}
+
+sourceSets {
+    main{
+        java{
+            srcDir 'src/agt'
+            srcDir 'src/env'
+            srcDir 'src/org'
+            srcDir 'src/coalition'
+            srcDir 'test/'
+        }
+    }
+}
